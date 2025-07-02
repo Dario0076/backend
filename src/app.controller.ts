@@ -24,28 +24,15 @@ export class AppController {
     return this.appService.checkDatabaseConnection();
   }
 
-  @Get('jwt-test')
-  async jwtTest() {
-    try {
-      // Verificar variables de entorno
-      const jwtSecret = process.env.JWT_SECRET;
-      const jwtExpiresIn = process.env.JWT_EXPIRES_IN;
-      
-      return {
-        status: 'success',
-        message: 'JWT environment check',
-        jwtSecretExists: !!jwtSecret,
-        jwtSecretLength: jwtSecret ? jwtSecret.length : 0,
-        jwtExpiresIn: jwtExpiresIn || 'not set',
-        timestamp: new Date().toISOString(),
-      };
-    } catch (error) {
-      return {
-        status: 'error',
-        message: error.message,
-        error: error.stack,
-        timestamp: new Date().toISOString(),
-      };
-    }
+  @Get('env-check')
+  getEnvCheck() {
+    return {
+      NODE_ENV: process.env.NODE_ENV || 'not set',
+      JWT_SECRET: process.env.JWT_SECRET ? 'SET (' + process.env.JWT_SECRET.length + ' chars)' : 'NOT SET',
+      JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || 'NOT SET',
+      DATABASE_URL: process.env.DATABASE_URL ? 'SET' : 'NOT SET',
+      PORT: process.env.PORT || 'NOT SET',
+      timestamp: new Date().toISOString(),
+    };
   }
 }
