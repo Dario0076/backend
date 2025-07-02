@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { AppService } from './app.service';
 
 @Controller()
@@ -34,5 +34,28 @@ export class AppController {
       PORT: process.env.PORT || 'NOT SET',
       timestamp: new Date().toISOString(),
     };
+  }
+
+  @Get('user-check/:email')
+  async getUserCheck(@Param('email') email: string) {
+    try {
+      const user = await this.appService.checkUserByEmail(email);
+      return {
+        status: 'success',
+        userExists: !!user,
+        userEmail: user?.email,
+        userRole: user?.role,
+        userActive: user?.isActive,
+        hasPassword: !!user?.password,
+        passwordLength: user?.password?.length,
+        timestamp: new Date().toISOString(),
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        message: error.message,
+        timestamp: new Date().toISOString(),
+      };
+    }
   }
 }

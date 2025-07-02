@@ -34,4 +34,15 @@ export class AppService {
       };
     }
   }
+
+  async checkUserByEmail(email: string): Promise<any> {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { email }
+      });
+      return user;
+    } catch (error) {
+      throw new Error(`Error checking user: ${error.message}`);
+    }
+  }
 }

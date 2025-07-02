@@ -50,4 +50,13 @@ export class AuthService {
     }
     return null;
   }
+
+  async testUserCredentials(email: string): Promise<any> {
+    try {
+      const user = await this.usersService.findByEmail(email);
+      return user;
+    } catch (error) {
+      throw new Error(`Error checking user: ${error.message}`);
+    }
+  }
 }
