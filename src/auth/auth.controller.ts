@@ -36,4 +36,51 @@ export class AuthController {
       };
     }
   }
+
+  @Post('debug-login')
+  async debugLogin(@Body() loginDto: any) {
+    try {
+      console.log('Debug login attempt:', loginDto);
+
+      // Verificar si el usuario existe
+      const user = await this.authService.testUserCredentials(loginDto.email);
+      if (!user) {
+        return {
+          status: 'error',
+          step: 'user_not_found',
+          email: loginDto.email,
+          message: 'Usuario no encontrado',
+        };
+      }
+
+      // Verificar password
+      const bcrypt = require('bcryptjs');
+      const validPassword = await bcrypt.compare(loginDto.password, user.password);
+      if (!validPassword) {
+        return {
+          status: 'error',
+          step: 'invalid_password',
+          message: 'Contraseña incorrecta',
+        };
+      }
+
+      return {
+        status: 'success',
+        step: 'credentials_valid',
+        user: {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          isActive: user.isActive,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        step: 'exception',
+        message: error.message,
+        stack: error.stack,
+      };
+    }
+  }
 }

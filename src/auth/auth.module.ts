@@ -14,7 +14,7 @@ import { LocalStrategy } from './strategies/local.strategy';
     PassportModule,
     JwtModule.register({
       secret: 'your-super-secret-jwt-key-change-this-in-production-render-2024',
-      signOptions: { expiresIn: '7d' },
+      signOptions: { expiresIn: 604800 }, // 7 días en segundos
     }),
   ],
   controllers: [AuthController],

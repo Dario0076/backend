@@ -9,7 +9,9 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-  ) {}
+  ) {
+    console.log('🔧 AuthService initialized');
+  }
 
   async register(registerDto: RegisterDto) {
     const user = await this.usersService.create(registerDto);
@@ -22,12 +24,20 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
+    console.log('🔐 Login attempt for:', loginDto.email);
+    
     const user = await this.validateUser(loginDto.email, loginDto.password);
     if (!user) {
+      console.log('❌ Login failed: Invalid credentials for', loginDto.email);
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
+    console.log('✅ User validated successfully:', user.email);
     const payload = { userId: user.id, email: user.email, role: user.role };
+    
+    console.log('🎫 Generating JWT token for payload:', payload);
+    const token = this.jwtService.sign(payload);
+    console.log('✅ JWT token generated successfully, length:', token.length);
     
     return {
       user: {
@@ -38,7 +48,7 @@ export class AuthService {
         address: user.address,
         role: user.role,
       },
-      access_token: this.jwtService.sign(payload),
+      access_token: token,
     };
   }
 
