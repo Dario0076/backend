@@ -260,8 +260,8 @@ async function main() {
 
   console.log('🎉 Seeding completado!');
   console.log('\n📧 Credenciales de prueba:');
-  console.log('Admin: admin@example.com / admin123');
-  console.log('Usuario: user@example.com / user123');
+  console.log('Admin: admin@admin.com / admin123');
+  console.log('Usuario: user@user.com / user123');
 }
 
 main()
