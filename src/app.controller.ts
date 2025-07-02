@@ -23,4 +23,29 @@ export class AppController {
   async getDatabaseStatus(): Promise<any> {
     return this.appService.checkDatabaseConnection();
   }
+
+  @Get('jwt-test')
+  async jwtTest() {
+    try {
+      // Verificar variables de entorno
+      const jwtSecret = process.env.JWT_SECRET;
+      const jwtExpiresIn = process.env.JWT_EXPIRES_IN;
+      
+      return {
+        status: 'success',
+        message: 'JWT environment check',
+        jwtSecretExists: !!jwtSecret,
+        jwtSecretLength: jwtSecret ? jwtSecret.length : 0,
+        jwtExpiresIn: jwtExpiresIn || 'not set',
+        timestamp: new Date().toISOString(),
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        message: error.message,
+        error: error.stack,
+        timestamp: new Date().toISOString(),
+      };
+    }
+  }
 }
