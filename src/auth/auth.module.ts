@@ -14,12 +14,21 @@ import { LocalStrategy } from './strategies/local.strategy';
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET') || 'fallback-secret-key-for-development-only',
-        signOptions: { 
-          expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '7d'
-        },
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const secret = configService.get<string>('JWT_SECRET') || 'your-super-secret-jwt-key-change-this-in-production-render-2024';
+        const expiresIn = configService.get<string>('JWT_EXPIRES_IN') || '7d';
+        
+        console.log('JWT Config:', { 
+          secretExists: !!secret, 
+          secretLength: secret.length,
+          expiresIn 
+        });
+        
+        return {
+          secret,
+          signOptions: { expiresIn },
+        };
+      },
       inject: [ConfigService],
     }),
   ],
