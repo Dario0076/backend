@@ -18,4 +18,9 @@ export class AppController {
       message: 'Backend is running'
     };
   }
+
+  @Get('db-status')
+  async getDatabaseStatus(): Promise<any> {
+    return this.appService.checkDatabaseConnection();
+  }
 }
