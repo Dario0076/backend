@@ -45,4 +45,21 @@ export class AppService {
       throw new Error(`Error checking user: ${error.message}`);
     }
   }
+
+  async getAllUsersDebug(): Promise<any[]> {
+    try {
+      const users = await this.prisma.user.findMany({
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          isActive: true,
+        }
+      });
+      return users;
+    } catch (error) {
+      throw new Error(`Error getting users: ${error.message}`);
+    }
+  }
 }

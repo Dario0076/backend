@@ -58,4 +58,29 @@ export class AppController {
       };
     }
   }
+
+  @Get('users-debug')
+  async debugUsers() {
+    try {
+      const users = await this.appService.getAllUsersDebug();
+      return {
+        status: 'success',
+        totalUsers: users.length,
+        users: users.map(u => ({
+          id: u.id,
+          email: u.email,
+          role: u.role,
+          isActive: u.isActive,
+          name: u.name
+        })),
+        timestamp: new Date().toISOString(),
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        message: error.message,
+        timestamp: new Date().toISOString(),
+      };
+    }
+  }
 }
