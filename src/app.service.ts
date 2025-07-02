@@ -62,4 +62,29 @@ export class AppService {
       throw new Error(`Error getting users: ${error.message}`);
     }
   }
+
+  async deleteUsersByEmail(emails: string[]): Promise<void> {
+    try {
+      await this.prisma.user.deleteMany({
+        where: {
+          email: {
+            in: emails
+          }
+        }
+      });
+    } catch (error) {
+      throw new Error(`Error deleting users: ${error.message}`);
+    }
+  }
+
+  async createUser(userData: any): Promise<any> {
+    try {
+      const user = await this.prisma.user.create({
+        data: userData
+      });
+      return user;
+    } catch (error) {
+      throw new Error(`Error creating user: ${error.message}`);
+    }
+  }
 }

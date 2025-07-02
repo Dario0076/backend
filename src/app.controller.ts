@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 
 @Controller()
@@ -87,5 +87,79 @@ export class AppController {
   @Get('list-users')
   async listUsers() {
     return this.appService.getAllUsersDebug();
+  }
+
+  @Get('db-info')
+  getDbInfo() {
+    return {
+      DATABASE_URL: process.env.DATABASE_URL ? 'SET' : 'NOT SET',
+      DB_URL_LENGTH: process.env.DATABASE_URL ? process.env.DATABASE_URL.length : 0,
+      DB_URL_START: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 30) + '...' : 'NOT SET',
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  @Post('create-test-users')
+  async createTestUsers() {
+    try {
+      console.log('🔧 Creating test users directly in production database...');
+      
+      const bcrypt = require('bcryptjs');
+      
+      // Eliminar usuarios existentes si existen
+      await this.appService.deleteUsersByEmail(['test@render.com', 'user@render.com']);
+      
+      // Crear password hasheado
+      const hashedPassword = await bcrypt.hash('test123', 10);
+      
+      // Crear usuario admin
+      const adminUser = await this.appService.createUser({
+        email: 'test@render.com',
+        password: hashedPassword,
+        name: 'Admin Test Render',
+        phone: '+34 999 888 777',
+        address: 'Calle Test Render 123',
+        role: 'ADMIN',
+        isActive: true,
+      });
+      
+      // Crear usuario regular
+      const regularUser = await this.appService.createUser({
+        email: 'user@render.com',
+        password: hashedPassword,
+        name: 'Usuario Test Render',
+        phone: '+34 888 777 666',
+        address: 'Calle Usuario Render 456',
+        role: 'USER',
+        isActive: true,
+      });
+      
+      return {
+        status: 'success',
+        message: 'Test users created successfully',
+        users: [
+          {
+            email: 'test@render.com',
+            password: 'test123',
+            role: 'ADMIN',
+            id: adminUser.id
+          },
+          {
+            email: 'user@render.com',
+            password: 'test123',
+            role: 'USER',
+            id: regularUser.id
+          }
+        ],
+        timestamp: new Date().toISOString(),
+      };
+      
+    } catch (error) {
+      return {
+        status: 'error',
+        message: error.message,
+        timestamp: new Date().toISOString(),
+      };
+    }
   }
 }
