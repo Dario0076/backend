@@ -83,4 +83,9 @@ export class AppController {
       };
     }
   }
+
+  @Get('list-users')
+  async listUsers() {
+    return this.appService.getAllUsersDebug();
+  }
 }
