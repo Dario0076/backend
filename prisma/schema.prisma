@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Modelo Usuario
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  phone     String?
+  address   String?
+  role      Role     @default(USER)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  orders Order[]
+
+  @@map("users")
+}
+
+// Modelo Categoria
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relaciones
+  products Product[]
+
+  @@map("categories")
+}
+
+// Modelo Producto
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  stock       Int      @default(0)
+  imageUrl    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relaciones
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  orderDetails OrderDetail[]
+
+  @@map("products")
+}
+
+// Modelo Pedido
+model Order {
+  id        String      @id @default(cuid())
+  orderDate DateTime    @default(now())
+  status    OrderStatus @default(PENDING)
+  total     Float
+  notes     String?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  // Relaciones
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  orderDetails OrderDetail[]
+
+  @@map("orders")
+}
+
+// Modelo DetallePedido
+model OrderDetail {
+  id       String @id @default(cuid())
+  quantity Int
+  price    Float
+  subtotal Float
+
+  // Relaciones
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@map("order_details")
+}
+
+// Enums
+enum Role {
+  USER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
