@@ -14,7 +14,7 @@ import { LocalStrategy } from './strategies/local.strategy';
     JwtModule.register({
       secret: 'ultra-secret-jwt-key-for-production-render-app-2025',
       signOptions: { 
-        expiresIn: 604800 // 7 días en segundos
+        expiresIn: '7d' // Volver a string pero con formato correcto
       },
     }),
   ],
