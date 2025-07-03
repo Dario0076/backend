@@ -32,24 +32,34 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    console.log('✅ User validated successfully:', user.email);
+    console.log('✅ User validated successfully:', user.email, 'Role:', user.role);
     const payload = { userId: user.id, email: user.email, role: user.role };
     
     console.log('🎫 Generating JWT token for payload:', payload);
-    const token = this.jwtService.sign(payload);
-    console.log('✅ JWT token generated successfully, length:', token.length);
     
-    return {
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        phone: user.phone,
-        address: user.address,
-        role: user.role,
-      },
-      access_token: token,
-    };
+    try {
+      const token = this.jwtService.sign(payload);
+      console.log('✅ JWT token generated successfully, length:', token.length);
+      
+      const response = {
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          phone: user.phone,
+          address: user.address,
+          role: user.role,
+        },
+        access_token: token,
+      };
+      
+      console.log('📤 Sending response with user:', response.user.email, 'role:', response.user.role);
+      return response;
+      
+    } catch (jwtError) {
+      console.error('❌ JWT Generation Error:', jwtError.message);
+      throw new Error('Error generating JWT token');
+    }
   }
 
   async validateUser(email: string, password: string): Promise<any> {
