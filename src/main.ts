@@ -34,6 +34,6 @@ async function bootstrap() {
   const port = configService.get<number>('PORT') || 3000;
   
   await app.listen(port, '0.0.0.0');
-  console.log(`🚀 Servidor ejecutándose en http://0.0.0.0:${port}/api`);
+  console.log(`🚀 Servidor ejecutándose en http://0.0.0.0:${port}/api - JWT Fixed v2`);
 }
 bootstrap();
